@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 // 本番環境のIDに差し替えるまでの一時的なテストID
-const DUMMY_CLIENT_ID = 'ca-pub-0000000000000000';
+const DUMMY_CLIENT_ID = 'ca-pub-4836830009110277';
 // 特定の広告ユニットを分ける場合はスロットIDを指定します
 const DUMMY_SLOT_ID = '1234567890';
 
