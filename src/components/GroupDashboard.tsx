@@ -16,7 +16,7 @@ export function GroupDashboard({ group }: { group: Group }) {
 
   // Initialize store with server data
   useEffect(() => {
-    initGroup(group.id, group.members, group.payments, group.roundUp);
+    initGroup(group.id, group.members, group.payments, group.roundUp, group.settledRoutes);
   }, [group, initGroup]);
 
   const handleShare = () => {

@@ -61,6 +61,7 @@ export function PaymentHistory() {
                 <TableRow>
                   <TableHead>日付</TableHead>
                   <TableHead>支払者</TableHead>
+                  <TableHead>対象</TableHead>
                   <TableHead>目的</TableHead>
                   <TableHead className="text-right">金額</TableHead>
                   <TableHead className="text-center">画像</TableHead>
@@ -75,6 +76,11 @@ export function PaymentHistory() {
                     </TableCell>
                     <TableCell className="font-medium">
                       {getMemberName(payment.payerId)}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {payment.forWhom && payment.forWhom.length > 0
+                        ? payment.forWhom.map(getMemberName).join(', ')
+                        : '全員'}
                     </TableCell>
                     <TableCell>{payment.purpose}</TableCell>
                     <TableCell className="text-right font-semibold">

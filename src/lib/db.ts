@@ -1,4 +1,4 @@
-import { Member, Payment } from './calculations';
+import { Member, Payment, SettledRoute } from './calculations';
 import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export type Group = {
@@ -8,6 +8,7 @@ export type Group = {
   members: Member[];
   payments: Payment[];
   roundUp: boolean;
+  settledRoutes?: SettledRoute[];
 };
 
 // getKV() ヘルパー関数: Cloudflare KV のインスタンスを取得
@@ -52,6 +53,7 @@ export async function createGroup(name: string, members: Member[]): Promise<Grou
     members,
     payments: [],
     roundUp: false,
+    settledRoutes: [],
   };
   
   // KVに保存 (JSON形式の文字列に変換)

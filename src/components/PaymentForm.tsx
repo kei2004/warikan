@@ -23,6 +23,8 @@ type PaymentFormValues = z.infer<typeof paymentSchema>;
 export function PaymentForm() {
   const { members, addPayment } = useStore();
   const [receiptImageBase64, setReceiptImageBase64] = useState<string | null>(null);
+  const [forWhomType, setForWhomType] = useState<'all' | 'specific'>('all');
+  const [forWhomIds, setForWhomIds] = useState<string[]>([]);
 
   const {
     register,
@@ -54,6 +56,11 @@ export function PaymentForm() {
   };
 
   const onSubmit = (data: PaymentFormValues) => {
+    if (forWhomType === 'specific' && forWhomIds.length === 0) {
+      alert('対象者を1人以上選択してください。');
+      return;
+    }
+
     const newPayment: Payment = {
       id: crypto.randomUUID(),
       payerId: data.payerId,
@@ -61,11 +68,15 @@ export function PaymentForm() {
       amount: data.amount,
       receiptImageUrl: receiptImageBase64 || undefined,
       createdAt: new Date(),
+      forWhom: forWhomType === 'specific' ? forWhomIds : [],
+      isSettled: false,
     };
 
     addPayment(newPayment);
     reset();
     setReceiptImageBase64(null);
+    setForWhomType('all');
+    setForWhomIds([]);
   };
 
   return (
@@ -130,7 +141,60 @@ export function PaymentForm() {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 border-t pt-4">
+              <Label>対象者（誰のための支払いか）</Label>
+              <div className="flex items-center gap-6 mt-1">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="forWhomType" 
+                    value="all" 
+                    className="accent-primary w-4 h-4"
+                    checked={forWhomType === 'all'} 
+                    onChange={() => setForWhomType('all')} 
+                  />
+                  全員で割る
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="forWhomType" 
+                    value="specific" 
+                    className="accent-primary w-4 h-4"
+                    checked={forWhomType === 'specific'} 
+                    onChange={() => setForWhomType('specific')} 
+                  />
+                  特定のメンバーのみ
+                </label>
+              </div>
+              
+              {forWhomType === 'specific' && (
+                <div className="mt-3 p-4 border rounded-md bg-muted/20 space-y-3 animate-in fade-in slide-in-from-top-2">
+                  <p className="text-xs text-muted-foreground">この支払いを負担するメンバーを選択してください：</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {members.map(m => (
+                      <label key={m.id} className="flex items-center gap-2 text-sm cursor-pointer bg-background p-2 rounded border hover:border-primary/50 transition-colors">
+                        <input 
+                          type="checkbox" 
+                          className="accent-primary w-4 h-4 rounded"
+                          checked={forWhomIds.includes(m.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setForWhomIds([...forWhomIds, m.id]);
+                            } else {
+                              setForWhomIds(forWhomIds.filter(id => id !== m.id));
+                            }
+                          }}
+                        />
+                        {m.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2 border-t pt-4">
               <Label>領収書画像 (任意・2MB以下)</Label>
               <div className="flex items-center gap-4">
                 <Label

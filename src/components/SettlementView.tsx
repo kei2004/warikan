@@ -11,7 +11,7 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 
 export function SettlementView() {
-  const { members, payments, roundUp, setRoundUp } = useStore();
+  const { members, payments, roundUp, setRoundUp, settledRoutes, toggleSettledRoute } = useStore();
 
   const { transactions, adjustments } = useMemo(() => {
     if (members.length === 0 || payments.length === 0) return { transactions: [], adjustments: [] };
@@ -23,7 +23,7 @@ export function SettlementView() {
   }, [members, payments, roundUp]);
 
   const handleExportCSV = () => {
-    exportSettlementsToCSV(transactions, members);
+    exportSettlementsToCSV(transactions, members, settledRoutes);
   };
 
   const getMemberName = (id: string) => {
@@ -70,27 +70,44 @@ export function SettlementView() {
         {transactions.length > 0 ? (
           <div className="space-y-6">
             <div className="space-y-4">
-              {transactions.map((t, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border hover:border-primary/50 transition-colors"
-                >
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="font-semibold text-lg min-w-[80px]">
-                      {getMemberName(t.from)}
-                    </div>
-                    <div className="flex flex-col items-center text-muted-foreground px-4">
-                      <span className="text-xs font-medium mb-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                        ¥{t.amount.toLocaleString()}
-                      </span>
-                      <ArrowRight className="w-5 h-5 text-primary animate-pulse" />
-                    </div>
-                    <div className="font-semibold text-lg min-w-[80px]">
-                      {getMemberName(t.to)}
+              {transactions.map((t, i) => {
+                const isSettled = settledRoutes.some(
+                  r => r.from === t.from && r.to === t.to && r.amount === t.amount
+                );
+
+                return (
+                  <div
+                    key={i}
+                    className={`flex items-center justify-between p-4 bg-muted/30 rounded-lg border transition-colors ${
+                      isSettled ? 'opacity-50 grayscale' : 'hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 accent-primary cursor-pointer mr-4"
+                          checked={isSettled}
+                          onChange={(e) => toggleSettledRoute(t, e.target.checked)}
+                          title="精算完了としてマークする"
+                        />
+                      </div>
+                      <div className={`font-semibold text-lg min-w-[80px] ${isSettled ? 'line-through' : ''}`}>
+                        {getMemberName(t.from)}
+                      </div>
+                      <div className="flex flex-col items-center text-muted-foreground px-4">
+                        <span className={`text-xs font-medium mb-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full ${isSettled ? 'line-through' : ''}`}>
+                          ¥{t.amount.toLocaleString()}
+                        </span>
+                        <ArrowRight className={`w-5 h-5 text-primary ${isSettled ? '' : 'animate-pulse'}`} />
+                      </div>
+                      <div className={`font-semibold text-lg min-w-[80px] ${isSettled ? 'line-through' : ''}`}>
+                        {getMemberName(t.to)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {roundUp && adjustments.length > 0 && (

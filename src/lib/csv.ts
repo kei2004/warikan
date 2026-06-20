@@ -1,28 +1,40 @@
 import Papa from 'papaparse';
-import { Member, Payment, Transaction } from './calculations';
+import { Member, Payment, Transaction, SettledRoute } from './calculations';
 
 export function exportPaymentsToCSV(payments: Payment[], members: Member[]) {
   const memberMap = new Map(members.map((m) => [m.id, m.name]));
 
-  const data = payments.map((p) => ({
-    '日付': new Date(p.createdAt).toLocaleDateString(),
-    '支払者': memberMap.get(p.payerId) || '不明',
-    '目的': p.purpose,
-    '金額': p.amount,
-  }));
+  const data = payments.map((p) => {
+    let forWhomText = '全員';
+    if (p.forWhom && p.forWhom.length > 0) {
+      forWhomText = p.forWhom.map(id => memberMap.get(id) || '不明').join(', ');
+    }
+
+    return {
+      '日付': new Date(p.createdAt).toLocaleDateString(),
+      '支払者': memberMap.get(p.payerId) || '不明',
+      '対象者': forWhomText,
+      '目的': p.purpose,
+      '金額': p.amount
+    };
+  });
 
   const csv = Papa.unparse(data);
   downloadCSV(csv, 'payments_history.csv');
 }
 
-export function exportSettlementsToCSV(transactions: Transaction[], members: Member[]) {
+export function exportSettlementsToCSV(transactions: Transaction[], members: Member[], settledRoutes: SettledRoute[] = []) {
   const memberMap = new Map(members.map((m) => [m.id, m.name]));
 
-  const data = transactions.map((t) => ({
-    '送金元': memberMap.get(t.from) || '不明',
-    '送金先': memberMap.get(t.to) || '不明',
-    '金額': t.amount,
-  }));
+  const data = transactions.map((t) => {
+    const isSettled = settledRoutes.some(r => r.from === t.from && r.to === t.to && r.amount === t.amount);
+    return {
+      '送金元': memberMap.get(t.from) || '不明',
+      '送金先': memberMap.get(t.to) || '不明',
+      '金額': t.amount,
+      '精算状況': isSettled ? '精算完了' : '未精算'
+    };
+  });
 
   const csv = Papa.unparse(data);
   downloadCSV(csv, 'settlement_list.csv');

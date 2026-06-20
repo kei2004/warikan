@@ -58,11 +58,34 @@ export async function addPaymentAction(groupId: string, payment: Payment) {
   revalidatePath(`/group/${groupId}`);
 }
 
+export async function updatePaymentAction(groupId: string, payment: Payment) {
+  await updateGroup(groupId, (group) => ({
+    ...group,
+    payments: group.payments.map((p) => (p.id === payment.id ? payment : p)),
+  }));
+  revalidatePath(`/group/${groupId}`);
+}
+
 export async function removePaymentAction(groupId: string, paymentId: string) {
   await updateGroup(groupId, (group) => ({
     ...group,
     payments: group.payments.filter((p) => p.id !== paymentId),
   }));
+  revalidatePath(`/group/${groupId}`);
+}
+
+export async function toggleSettledRouteAction(groupId: string, route: { from: string, to: string, amount: number }, isSettled: boolean) {
+  await updateGroup(groupId, (group) => {
+    const currentRoutes = group.settledRoutes || [];
+    let newRoutes;
+    if (isSettled) {
+      const exists = currentRoutes.some(r => r.from === route.from && r.to === route.to && r.amount === route.amount);
+      newRoutes = exists ? currentRoutes : [...currentRoutes, route];
+    } else {
+      newRoutes = currentRoutes.filter(r => !(r.from === route.from && r.to === route.to && r.amount === route.amount));
+    }
+    return { ...group, settledRoutes: newRoutes };
+  });
   revalidatePath(`/group/${groupId}`);
 }
 

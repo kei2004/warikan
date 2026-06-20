@@ -10,7 +10,13 @@ export type Payment = {
   purpose: string;
   amount: number;
   receiptImageUrl?: string;
-  createdAt: Date;
+  forWhom?: string[]; // IDs of members. If undefined or empty, it means everyone.
+};
+
+export type SettledRoute = {
+  from: string;
+  to: string;
+  amount: number;
 };
 
 export type Balance = {
@@ -32,32 +38,48 @@ export type Adjustment = {
 };
 
 export function calculateBalances(members: Member[], payments: Payment[]): Balance[] {
-  const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
-  const totalWeight = members.reduce((sum, m) => sum + m.weight, 0);
-
-  // If no weights or no payments, everyone's balance is 0
-  if (totalWeight === 0 || totalAmount === 0 || members.length === 0) {
-    return members.map((m) => ({ memberId: m.id, paid: 0, target: 0, balance: 0 }));
+  // If no weights or no active payments, everyone's balance is 0
+  if (members.length === 0) {
+    return [];
   }
 
-  // Calculate how much each person paid
-  const paidAmounts = new Map<string, number>();
-  members.forEach((m) => paidAmounts.set(m.id, 0));
+  // Calculate how much each person paid and how much their target share is
+  const balancesMap = new Map<string, { paid: number; target: number }>();
+  members.forEach((m) => balancesMap.set(m.id, { paid: 0, target: 0 }));
+
   payments.forEach((p) => {
-    if (paidAmounts.has(p.payerId)) {
-      paidAmounts.set(p.payerId, paidAmounts.get(p.payerId)! + p.amount);
+    // 支払者がまだメンバーにいる場合のみ支払い額を加算
+    if (balancesMap.has(p.payerId)) {
+      balancesMap.get(p.payerId)!.paid += p.amount;
+    }
+
+    // 誰のための支払いか（指定がなければ全員、いればそのメンバーだけ）
+    let splitMembers = members;
+    if (p.forWhom && p.forWhom.length > 0) {
+      splitMembers = members.filter(m => p.forWhom!.includes(m.id));
+      // もし対象者が全員削除されていたら、全体で分割するフォールバック
+      if (splitMembers.length === 0) {
+        splitMembers = members;
+      }
+    }
+
+    const totalWeight = splitMembers.reduce((sum, m) => sum + m.weight, 0);
+    
+    if (totalWeight > 0) {
+      splitMembers.forEach(m => {
+        const share = (m.weight / totalWeight) * p.amount;
+        balancesMap.get(m.id)!.target += share;
+      });
     }
   });
 
   return members.map((m) => {
-    const paid = paidAmounts.get(m.id) || 0;
-    const target = (m.weight / totalWeight) * totalAmount;
-    const balance = paid - target;
+    const b = balancesMap.get(m.id)!;
     return {
       memberId: m.id,
-      paid,
-      target,
-      balance,
+      paid: b.paid,
+      target: b.target,
+      balance: b.paid - b.target,
     };
   });
 }
