@@ -1,0 +1,8 @@
+name = "warikan-app"
+compatibility_date = "2024-03-20"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+[[kv_namespaces]]
+binding = "WARIKAN_DB"
+id = "81eb594108434339b11c084766c3fddf"

@@ -1,0 +1,61 @@
+{
+  "groups": {
+    "5609e39f-51a0-460b-ab6a-6c107569ccf9": {
+      "id": "5609e39f-51a0-460b-ab6a-6c107569ccf9",
+      "name": "test",
+      "createdAt": "2026-06-20T06:29:36.495Z",
+      "members": [
+        {
+          "id": "a2002a5d-10fe-46c9-9b26-29f18c8d0108",
+          "name": "山田",
+          "weight": 1
+        },
+        {
+          "id": "bee2d041-c159-4a34-99ef-b5b551a164c7",
+          "name": "田中",
+          "weight": 1
+        }
+      ],
+      "payments": [],
+      "roundUp": false
+    },
+    "0d754ae6-fe5b-421b-87cf-a7ba94c1db52": {
+      "id": "0d754ae6-fe5b-421b-87cf-a7ba94c1db52",
+      "name": "てｓｔｔｔ",
+      "createdAt": "2026-06-20T06:31:50.252Z",
+      "members": [
+        {
+          "id": "6a55b994-210d-45f6-9764-d34a70c4a436",
+          "name": "山田",
+          "weight": 1
+        },
+        {
+          "id": "b74628ac-682d-409e-bbc5-a2896684a5ce",
+          "name": "ｒ",
+          "weight": 1
+        }
+      ],
+      "payments": [],
+      "roundUp": false
+    },
+    "7dae6e33-c416-416e-b2a0-eec21fac3c2d": {
+      "id": "7dae6e33-c416-416e-b2a0-eec21fac3c2d",
+      "name": "れれ",
+      "createdAt": "2026-06-20T06:34:12.661Z",
+      "members": [
+        {
+          "id": "79ce4ee3-2d4f-4df3-b44f-732662a9c4e0",
+          "name": "やや",
+          "weight": 1
+        },
+        {
+          "id": "c31ba289-0d97-484e-98bf-1e480c1cca8d",
+          "name": "とと",
+          "weight": 1
+        }
+      ],
+      "payments": [],
+      "roundUp": false
+    }
+  }
+}
