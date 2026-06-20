@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -39,7 +40,22 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <div className="flex-1">{children}</div>
+        <footer className="bg-white/50 dark:bg-zinc-900/50 border-t py-8 mt-auto">
+          <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+              <Link href="/about" className="hover:text-primary transition-colors">アプリについて</Link>
+              <Link href="/terms" className="hover:text-primary transition-colors">利用規約</Link>
+              <Link href="/privacy" className="hover:text-primary transition-colors">プライバシーポリシー</Link>
+              <Link href="/contact" className="hover:text-primary transition-colors">お問い合わせ</Link>
+            </div>
+            <div className="text-xs">
+              &copy; {new Date().getFullYear()} スマート割り勘
+            </div>
+          </div>
+        </footer>
+      </body>
     </html>
   );
 }
