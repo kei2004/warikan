@@ -9,6 +9,7 @@ import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
 import { Share2, Check } from 'lucide-react';
 import { Group } from '@/lib/db';
+import { AdBanner } from '@/components/AdBanner';
 
 export function GroupDashboard({ group }: { group: Group }) {
   const { initGroup } = useStore();
@@ -89,6 +90,11 @@ export function GroupDashboard({ group }: { group: Group }) {
               <SettlementView />
             </section>
           </div>
+        </div>
+
+        {/* AdSense Banner */}
+        <div className="mt-12">
+          <AdBanner />
         </div>
       </div>
     </main>

@@ -10,6 +10,7 @@ export type Payment = {
   purpose: string;
   amount: number;
   receiptImageUrl?: string;
+  createdAt: Date;
   forWhom?: string[]; // IDs of members. If undefined or empty, it means everyone.
 };
 

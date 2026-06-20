@@ -69,7 +69,6 @@ export function PaymentForm() {
       receiptImageUrl: receiptImageBase64 || undefined,
       createdAt: new Date(),
       forWhom: forWhomType === 'specific' ? forWhomIds : [],
-      isSettled: false,
     };
 
     addPayment(newPayment);

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Users, Plus, ArrowRight } from 'lucide-react';
+import { AdBanner } from '@/components/AdBanner';
 
 export default function LandingPage() {
   return (
@@ -63,6 +64,9 @@ export default function LandingPage() {
         <p className="text-center text-xs text-muted-foreground">
           ※作成されたグループは、最後の更新から30日経過すると自動的に削除されます。
         </p>
+
+        {/* AdSense Banner */}
+        <AdBanner />
       </div>
     </main>
   );
